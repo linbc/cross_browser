@@ -3,7 +3,7 @@ import json
 with open("../fonts.txt",'r') as f:
     res = f.read()
     masks = res.split('\n')
-    print len(masks)
+    print (len(masks))
     
     l = len(masks[0])
     mask = [1 for i in range(l)]
@@ -15,4 +15,4 @@ with open("../fonts.txt",'r') as f:
             mask[i] = 0
 
     
-    print mask
+    print (mask)

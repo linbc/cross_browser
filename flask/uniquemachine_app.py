@@ -5,11 +5,12 @@ from flask_cors import CORS, cross_origin
 import json
 import hashlib
 from flaskext.mysql import MySQL
-import ConfigParser
+import configparser
 import re
 
-root = "/home/sol315/server/uniquemachine/"
-config = ConfigParser.ConfigParser()
+# root = "/home/sol315/server/uniquemachine/"
+root = "./"
+config = configparser.ConfigParser()
 config.read(root + 'password.ignore')
 
 mysql = MySQL()
@@ -17,7 +18,7 @@ app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = config.get('mysql', 'username')
 app.config['MYSQL_DATABASE_PASSWORD'] = config.get('mysql', 'password')
 app.config['MYSQL_DATABASE_DB'] = 'uniquemachine'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = config.get('mysql', 'host')
 mysql.init_app(app)
 CORS(app)
 
@@ -123,14 +124,14 @@ def features():
     result['encoding'] = encoding
     result['language'] = language
     
-    print agent
+    print (agent)
            
     feature_str = "IP"
     value_str = "'" + IP + "'"
 
     for feature in feature_list:
         
-        if result[feature] is not "":
+        if result[feature] != "":
             value = result[feature]
         else:
             value = "NULL"
