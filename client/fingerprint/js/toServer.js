@@ -1,4 +1,4 @@
-var ip_address = "sec.uniquemachine.org/uniquemachine/";
+var ip_address = "127.0.0.1:5000/";
 //var ip_address = "aws.songli.us:5000";
 
 function populateFontList(fontArr) {
@@ -259,7 +259,9 @@ var Sender = function() {
           success : function(data) {
             console.log(data);
             data['finished'] = true;
-            parent.postMessage(data,"http://uniquemachine.org");
+            // TODO:不需要往服务端推送这个数据
+            // parent.postMessage(data,"http://127.0.0.1:5000");
+            alert(data.cross)
           },
           error: function (xhr, ajaxOptions, thrownError) {
             alert(thrownError);
