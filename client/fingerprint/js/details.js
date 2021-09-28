@@ -278,7 +278,7 @@ function buildTable(data) {
 
 
 function getDetails() {
-  ip_address = "127.0.0.1:5000"
+  ip_address = "git.lvsea.xyz:5000"
   //ip_address = "aws.songli.us:5000"
   var ID = window.location.href.split("?")[1];
   $("#cur_fingerprint").html("Current Fingerprint: " + ID);

@@ -1,4 +1,4 @@
-var ip_address = "127.0.0.1:5000/";
+var ip_address = "git.lvsea.xyz:5000/";
 //var ip_address = "aws.songli.us:5000";
 
 function populateFontList(fontArr) {
@@ -260,7 +260,7 @@ var Sender = function() {
             console.log(data);
             data['finished'] = true;
             // TODO:不需要往服务端推送这个数据
-            // parent.postMessage(data,"http://127.0.0.1:5000");
+            // parent.postMessage(data,"http://git.lvsea.xyz:5000");
             $('#status').html(data.cross);
 
           },
