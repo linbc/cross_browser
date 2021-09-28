@@ -261,7 +261,8 @@ var Sender = function() {
             data['finished'] = true;
             // TODO:不需要往服务端推送这个数据
             // parent.postMessage(data,"http://127.0.0.1:5000");
-            alert(data.cross)
+            $('#status').html(data.cross);
+
           },
           error: function (xhr, ajaxOptions, thrownError) {
             alert(thrownError);
