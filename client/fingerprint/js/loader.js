@@ -44,27 +44,11 @@
 
   Loader = (function() {
     function Loader() {
-      var colorName, colorName1, simpleName, susanName;
+      var simpleName, susanName;
       this.parseURL();
-      //this.checkID();
       this.numberOfAssets = 0;
       this.numLoaded = 0;
-      susanName = './assets/Susan.json';
       simpleName = './assets/simple.json';
-      colorName = './assets/color.png';
-      colorName1 = './assets/color2.png';
-      this.loadJSONResource(susanName, (function(_this) {
-        return function(err, susanModel) {
-          _this.susanModel = susanModel;
-          if (err) {
-            alert('error getting susan model');
-            console.log(err);
-          } else {
-            _this.assetLoaded();
-          }
-          return true;
-        };
-      })(this));
       this.loadJSONResource(simpleName, (function(_this) {
         return function(err, simpleModel) {
           _this.simpleModel = simpleModel;
@@ -77,30 +61,7 @@
           return true;
         };
       })(this));
-      this.loadImage(colorName, (function(_this) {
-        return function(err, texture) {
-          _this.texture = texture;
-          if (err) {
-            alert('error getting color.png');
-            console.log(err);
-          } else {
-            _this.assetLoaded();
-          }
-          return true;
-        };
-      })(this));
-      this.loadImage(colorName1, (function(_this) {
-        return function(err, texture1) {
-          _this.texture1 = texture1;
-          if (err) {
-            alert('error getting colors.png');
-            console.log(err);
-          } else {
-            _this.assetLoaded();
-          }
-          return true;
-        };
-      })(this));
+
     }
 
     Loader.prototype.parseURL = function() {
@@ -144,17 +105,6 @@
       return true;
     };
 
-    Loader.prototype.loadImage = function(url, callback) {
-      var image;
-      ++this.numberOfAssets;
-      image = new Image();
-      image.onload = function() {
-        return callback(null, image);
-      };
-      image.src = url;
-      return true;
-    };
-
     Loader.prototype.loadJSONResource = function(url, callback) {
       this.loadTextResource(url, function(err, result) {
         var e, error;
@@ -173,118 +123,20 @@
     };
 
     Loader.prototype.beginTests = function() {
-      var Tester, canvasContainer, d, i, index, j, k, l, len, maxFirst, postProgress, ref, ref1, ref2, ref3, ref4, ref5, sender, test, vert;
-      this.susanVertices = this.susanModel.meshes[0].vertices;
-      this.susanIndices = [].concat.apply([], this.susanModel.meshes[0].faces);
-      this.susanTexCoords = this.susanModel.meshes[0].texturecoords[0];
-      this.susanNormals = this.susanModel.meshes[0].normals;
-      this.simpleVertices = (function() {
-        var j, len, ref, results;
-        ref = this.simpleModel.meshes[0].vertices;
-        results = [];
-        for (j = 0, len = ref.length; j < len; j++) {
-          vert = ref[j];
-          results.push(vert / 20.0);
-        }
-        return results;
-      }).call(this);
-      this.simpleIndices = [].concat.apply([], this.simpleModel.meshes[0].faces);
-      this.simpleTexCoords = this.simpleModel.meshes[0].texturecoords[0];
-      this.simpleNormals = this.simpleModel.meshes[0].normals;
-      this.combinedVertices = new Array(this.simpleIndices.length + this.susanIndices.length);
-      for (i = j = 0, ref = this.susanVertices.length; j < ref; i = j += 3) {
-        this.combinedVertices[i + 0] = this.susanVertices[i + 0];
-        this.combinedVertices[i + 1] = this.susanVertices[i + 1] + 1.3;
-        this.combinedVertices[i + 2] = this.susanVertices[i + 2];
-      }
-      for (i = k = 0, ref1 = this.simpleVertices.length; k < ref1; i = k += 3) {
-        this.combinedVertices[i + 0 + this.susanVertices.length] = this.simpleVertices[i + 0];
-        this.combinedVertices[i + 1 + this.susanVertices.length] = this.simpleVertices[i + 1] - 1.3;
-        this.combinedVertices[i + 2 + this.susanVertices.length] = this.simpleVertices[i + 2];
-      }
-      this.combinedIndices = new Array(this.simpleIndices.length + this.susanIndices.length);
-      [].splice.apply(this.combinedIndices, [0, this.susanIndices.length - 0].concat(ref2 = this.susanIndices)), ref2;
-      maxFirst = this.susanIndices.reduce(function(a, b) {
-        return Math.max(a, b);
-      });
-      [].splice.apply(this.combinedIndices, [(ref3 = this.susanIndices.length), this.combinedIndices.length - ref3].concat(ref4 = (function() {
-        var l, len, ref5, results;
-        ref5 = this.simpleIndices;
-        results = [];
-        for (l = 0, len = ref5.length; l < len; l++) {
-          index = ref5[l];
-          results.push(index + 1 + maxFirst);
-        }
-        return results;
-      }).call(this))), ref4;
-      this.combinedTexCoords = this.susanTexCoords.concat(this.simpleTexCoords);
-      this.combinedNormals = this.susanNormals.concat(this.simpleNormals);
-      this.testList = [];
+      var postProgress,sender;
+    
       root.sender = sender = new Sender();
-      this.testList.push(new CubeTest('normal'));
-      this.testList.push(new CubeTest('aa'));
-      this.testList.push(new CameraTest());
-      this.testList.push(new LineTest('normal'));
-      this.testList.push(new LineTest('aa'));
-      this.testList.push(new TextureTest(this.susanVertices, this.susanIndices, this.susanTexCoords, this.texture));
-      this.testList.push(new TextureTest(this.combinedVertices, this.combinedIndices, this.combinedTexCoords, this.texture));
-      this.testList.push(new SimpleLightTest(this.susanVertices, this.susanIndices, this.susanTexCoords, this.susanNormals, this.texture));
-      this.testList.push(new SimpleLightTest(this.combinedVertices, this.combinedIndices, this.combinedTexCoords, this.combinedNormals, this.texture));
-      this.testList.push(new MoreLightTest(this.combinedVertices, this.combinedIndices, this.combinedTexCoords, this.combinedNormals, this.texture));
-      this.testList.push(new TwoTexturesMoreLightTest(this.combinedVertices, this.combinedIndices, this.combinedTexCoords, this.combinedNormals, this.texture, this.texture1));
-      this.testList.push(new TransparentTest(this.combinedVertices, this.combinedIndices, this.combinedTexCoords, this.combinedNormals, this.texture));
-      this.testList.push(new LightingTest());
-      this.testList.push(new ClippingTest());
-      this.testList.push(new BubbleTest());
-      this.testList.push(new CompressedTextureTest());
-      this.testList.push(new ShadowTest());
       this.asyncTests = [];
-      //language detection is done by another js file
-      //this.asyncTests.push(new LanguageDector());
       sender.finalized = true;
-      this.numberOfTests = this.testList.length + this.asyncTests.length;
+      this.numberOfTests = this.asyncTests.length+1;
       this.numComplete = 0;
       postProgress = (function(_this) {
         return function() {
-          progress(++_this.numComplete / _this.numberOfTests * 90.0);
-          if (_this.numComplete === _this.numberOfTests) {
-            if (_this.requests['demo'] === "True") {
-              $('body canvas').remove();
-            }
-            return sender.sendData();
-          }
+          return sender.sendData();
         };
       })(this);
-      d = 256;
-      Tester = (function() {
-        function Tester(testList, dest) {
-          var testDone;
-          this.testList = testList;
-          this.canvas = $("<canvas width='" + d + "' height='" + d + "'/>").appendTo(dest)[0];
-          this.numTestsComplete = 0;
-          testDone = (function(_this) {
-            return function() {
-              _this.numTestsComplete++;
-              postProgress();
-              if (_this.numTestsComplete < _this.testList.length) {
-                return _this.testList[_this.numTestsComplete].begin(_this.canvas, testDone);
-              }
-            };
-          })(this);
-          this.testList[0].begin(this.canvas, testDone);
-        }
+      postProgress();
 
-        return Tester;
-
-      })();
-      canvasContainer = this.requests['demo'] === "True" ? $('body') : $('#test_canvases');
-      $("<canvas id='can_aa' width='" + d + "' height='" + d + "'/>").appendTo(canvasContainer);
-      new Tester(this.testList, canvasContainer);
-      ref5 = this.asyncTests;
-      for (l = 0, len = ref5.length; l < len; l++) {
-        test = ref5[l];
-        test.begin(postProgress);
-      }
       return true;
     };
 
@@ -297,4 +149,167 @@
     return loader = new Loader();
   });
 
+
+  // LanguageDetector
+  var LanguageDetector, root, safeParseJSON;
+
+  root = typeof exports !== "undefined" && exports !== null ? exports : this;
+
+  safeParseJSON = function(s) {
+    try {
+      return JSON.parse(s);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  LanguageDetector = (function() {
+    function LanguageDetector() {
+      this.names = safeParseJSON('[ "Latin", "Chinese", "Arabic", "Devanagari", "Cyrillic", "Bengali/Assamese", "Kana", "Gurmukhi", "Javanese", "Hangul", "Telugu", "Tamil", "Malayalam", "Burmese", "Thai", "Sundanese", "Kannada", "Gujarati", "Lao", "Odia", "Ge-ez", "Sinhala", "Armenian", "Khmer", "Greek", "Lontara", "Hebrew", "Tibetan", "Georgian", "Modern Yi", "Mongolian", "Tifinagh", "Syriac", "Thaana", "Inuktitut", "Cherokee" ]');
+      this.codes = safeParseJSON("[[76,97,116,105,110], [27721,23383], [1575,1604,1593,1585,1576,1610,1577], [2342,2375,2357,2344,2366,2327,2352,2368], [1050,1080,1088,1080,1083,1080,1094,1072], [2476,2494,2434,2482,2494,32,47,32,2437,2488,2478,2496,2479,2492,2494], [20206,21517], [2583,2625,2608,2606,2625,2582,2624], [43415,43438], [54620,44544], [3108,3142,3122,3137,3095,3137], [2980,2990,3007,2996,3021], [3374,3378,3375,3390,3379,3330], [4121,4156,4116,4154,4121,4140], [3652,3607,3618], [7070,7077,7060,7082,7059], [3221,3240,3277,3240,3233], [2711,2753,2716,2736,2750,2724,2752], [3749,3762,3751], [2825,2852,2893,2837,2867], [4877,4821,4829], [3523,3538,3458,3524,3517], [1344,1377,1397,1400,1409], [6017,6098,6040,6082,6042], [917,955,955,951,957,953,954,972], [6674,6682,6664,6673], [1488,1500,1508,1489,1497,1514], [3926,3964,3921,3851], [4325,4304,4320,4311,4323,4314,4312], [41352,41760], [6190,6179,6185,6189,6179,6191], [11612,11593,11580,11593,11599,11568,11606], [1808,1834,1825,1821,1808], [1931,1960,1928,1964,1920,1960], [5123,5316,5251,5198,5200,5222], [5091,5043,5033], [55295, 7077]]");
+      this.fontSize = 9;
+      this.fontFace = "Verdana";
+      this.extraHeigth = 15;
+      this.results = [];
+    }
+
+    LanguageDetector.prototype.begin = function() {
+      var c, code, h, height, i, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, m, n, o, p, ref, ref1, ref2, ref3, round, s, w, width;
+      round = 0;
+      this.widths = [];
+      this.heights = [];
+      this.support = [];
+      this.test_div = document.createElement("div");
+      document.body.appendChild(this.test_div);
+      this.test_div.id = "WritingTest";
+      ref = this.codes;
+      for (i = 0, len = ref.length; i < len; i++) {
+        code = ref[i];
+        this.height = [];
+        this.width = [];
+        this.div = document.createElement("div");
+        this.test_div.appendChild(this.div);
+        round += 1;
+        this.div.id = round;
+        this.div.style.display = "inline-block";
+        for (j = 0, len1 = code.length; j < len1; j++) {
+          c = code[j];
+          this.div.innerHTML = ("<font face = '" + this.fontFace + "' size = ") + this.fontSize + ">&#" + c + "</font>";
+          this.height.push(document.getElementById(round).clientHeight);
+          this.width.push(document.getElementById(round).clientWidth);
+        }
+        this.div.innerHTML = "";
+        for (k = 0, len2 = code.length; k < len2; k++) {
+          c = code[k];
+          this.div.innerHTML += ("<font face = '" + this.fontFace + "' size = ") + this.fontSize + ">&#" + c + "</font>";
+        }
+        this.test_div.innerHTML += this.height + ";" + this.width + "<br>";
+        this.heights.push(this.height);
+        this.widths.push(this.width);
+      }
+      this.tw = this.widths.pop();
+      this.sw1 = this.tw[0];
+      this.sw2 = this.tw[1];
+      this.sh = this.heights.pop()[0];
+      ref1 = this.heights;
+      for (l = 0, len3 = ref1.length; l < len3; l++) {
+        height = ref1[l];
+        this.passed = 0;
+        for (m = 0, len4 = height.length; m < len4; m++) {
+          h = height[m];
+          if (h !== this.sh) {
+            this.support.push(true);
+            this.passed = 1;
+            break;
+          }
+        }
+        if (this.passed === 0) {
+          this.support.push(false);
+        }
+      }
+      this.writing_scripts_index = 0;
+      ref2 = this.widths;
+      for (n = 0, len5 = ref2.length; n < len5; n++) {
+        width = ref2[n];
+        for (o = 0, len6 = width.length; o < len6; o++) {
+          w = width[o];
+          if (this.support[this.writing_scripts_index] === false) {
+            if (w !== this.sw1 && w !== this.sw2) {
+              this.support[this.writing_scripts_index] = true;
+            }
+          }
+        }
+        this.writing_scripts_index += 1;
+      }
+      this.res = [];
+      this.writing_scripts_index = 0;
+      ref3 = this.support;
+      for (p = 0, len7 = ref3.length; p < len7; p++) {
+        s = ref3[p];
+        this.test_div.innerHTML += this.names[this.writing_scripts_index] + ": " + s + " <br>";
+        if (s === true) {
+          this.res.push(this.names[this.writing_scripts_index]);
+        }
+        this.writing_scripts_index += 1;
+      }
+      this.test_div.remove();
+      return this.res;
+    };
+
+    return LanguageDetector;
+
+  })();
+
+  root.get_writing_scripts = function() {
+    var detector;
+    detector = new LanguageDetector;
+    return this.res = detector.begin();
+  };
+
 }).call(this);
+
+// fontDetector
+var fontDetector = function() {
+  // a font will be compared against all the three default fonts.
+  // and if it doesn't match all 3 then that font is not available.
+  var baseFonts = ['monospace', 'sans-serif', 'serif'];
+
+  //we use m or w because these two characters take up the maximum width.
+  // And we use a LLi so that the same matching fonts can get separated
+  var testString = "mmmmmmmmmmlli";
+
+  //we test using 72px font size, we may use any size. I guess larger the better.
+  var testSize = '72px';
+
+  var h = document.getElementsByTagName("body")[0];
+
+  // create a SPAN in the document to get the width of the text we use to test
+  var s = document.createElement("span");
+  s.style.fontSize = testSize;
+  s.innerHTML = testString;
+  var defaultWidth = {};
+  var defaultHeight = {};
+  for (var index in baseFonts) {
+      //get the default width for the three base fonts
+      s.style.fontFamily = baseFonts[index];
+      h.appendChild(s);
+      defaultWidth[baseFonts[index]] = s.offsetWidth; //width for the default font
+      defaultHeight[baseFonts[index]] = s.offsetHeight; //height for the defualt font
+      h.removeChild(s);
+  }
+
+  function detect(font) {
+      var detected = false;
+      for (var index in baseFonts) {
+          s.style.fontFamily = font + ',' + baseFonts[index]; // name of the font along with the base font for fallback.
+          h.appendChild(s);
+          var matched = (s.offsetWidth != defaultWidth[baseFonts[index]] || s.offsetHeight != defaultHeight[baseFonts[index]]);
+          h.removeChild(s);
+          detected = detected || matched;
+      }
+      return detected;
+  }
+
+  this.detect = detect;
+};
+
