@@ -1,3 +1,6 @@
+#需要安装包
+#sudo pip3 install flask_failsafe  flask_cors flask-mysql
+
 from flask_failsafe import failsafe
 
 def create_app():
