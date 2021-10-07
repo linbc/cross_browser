@@ -1,24 +1,6 @@
 var ip_address = "git.lvsea.xyz:5000/";
 //var ip_address = "aws.songli.us:5000";
 
-function populateFontList(fontArr) {
-  fonts = [];
-  for (var key in fontArr) {
-    var fontName = fontArr[key];
-    fontName = fontName.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-    fonts.push(fontName);
-  }
-
-  sender.addFonts(fonts);
-}
-function getResolution() {
-      var zoom_level = detectZoom.device();
-      var fixed_width = window.screen.width * zoom_level;
-      var fixed_height = window.screen.height * zoom_level;
-      var res = Math.round(fixed_width) + '_' + Math.round(fixed_height) + '_' + zoom_level + '_' + window.screen.width+"_"+window.screen.height+"_"+window.screen.colorDepth+"_"+window.screen.availWidth + "_" + window.screen.availHeight + "_" + window.screen.left + '_' + window.screen.top + '_' + window.screen.availLeft + "_" + window.screen.availTop + "_" + window.innerWidth + "_" + window.outerWidth + "_" + detectZoom.zoom();
-      return res;
-}
-
 var Sender = function() {
   this.finalized = false;
   this.postData = {
@@ -236,8 +218,8 @@ var Sender = function() {
 
       //console.log(this.postData['adBlock'])
 
-      cvs_test = CanvasTest();
-      this.postData['canvas_test'] = Base64EncodeUrlSafe(calcSHA1(cvs_test.substring(22, cvs_test.length))); //remove the leading words
+      // cvs_test = CanvasTest();
+      // this.postData['canvas_test'] = Base64EncodeUrlSafe(calcSHA1(cvs_test.substring(22, cvs_test.length))); //remove the leading words
       if(!navigator.hardwareConcurrency)
         this.postData['cpu_cores'] = "-1";
       else
@@ -259,10 +241,8 @@ var Sender = function() {
           success : function(data) {
             console.log(data);
             data['finished'] = true;
-            // TODO:不需要往服务端推送这个数据
-            // parent.postMessage(data,"http://git.lvsea.xyz:5000");
-            $('#status').html(data.cross);
-
+            // parent.postMessage(data,"http://uniquemachine.org");
+            $('#status').html('cross:'+data.cross+'<br/>single:'+data.single);
           },
           error: function (xhr, ajaxOptions, thrownError) {
             alert(thrownError);
@@ -273,36 +253,3 @@ var Sender = function() {
 
   }
 };
-
-/* Converts the charachters that aren't UrlSafe to ones that are and
-   removes the padding so the base64 string can be sent
-   */
-Base64EncodeUrlSafe = function(str) {
-  return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
-};
-
-stringify = function(array) {
-  var str = "";
-  for (var i = 0, len = array.length; i < len; i += 4) {
-    str += String.fromCharCode(array[i + 0]);
-    str += String.fromCharCode(array[i + 1]);
-    str += String.fromCharCode(array[i + 2]);
-  }
-
-  // NB: AJAX requires that base64 strings are in their URL safe
-  // form and don't have any padding
-  var b64 = window.btoa(str);
-  return Base64EncodeUrlSafe(b64);
-};
-
-Uint8Array.prototype.hashCode = function() {
-  var hash = 0, i, chr, len;
-  if (this.length === 0)
-    return hash;
-  for (i = 0, len = this.length; i < len; i++) {
-    chr = this[i];
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-}
